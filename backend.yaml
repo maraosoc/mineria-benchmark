@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Terraform backend resources
+
+Parameters:
+  BucketName:
+    Type: String
+
+Resources:
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !Ref TerraformKey
+
+  TerraformKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: Terraform KMS key for state encryption
+      EnableKeyRotation: true
+
+  DynamoLockTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+
+Outputs:
+  S3BucketName:
+    Value: !Ref TerraformStateBucket
+  KMSKeyArn:
+    Value: !GetAtt TerraformKey.Arn
+  DynamoTable:
+    Value: !Ref DynamoLockTable
