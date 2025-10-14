@@ -4,9 +4,9 @@ import argparse, json, random, time
 import boto3
 from concurrent.futures import ThreadPoolExecutor
 
-SERVICES = ["auth", "payments", "orders", "monitoring", "search", "catalog", "shipping"]
-STATUS = [200, 201, 204, 301, 400, 401, 403, 404, 409, 429, 500, 502, 503, 504]
-STATUS_WEIGHTS = [0.6, 0.05, 0.05, 0.02, 0.05, 0.02, 0.01, 0.06, 0.01, 0.02, 0.07, 0.02, 0.015, 0.005]
+SERVICES = ["training", "evaluation", "inference", "monitoring"]
+STATUS = [200, 201, 202, 203, 400, 401, 402, 403, 404, 500]
+STATUS_WEIGHTS = [0.6, 0.05, 0.05, 0.02, 0.05, 0.02, 0.01, 0.06, 0.01, 0.02]
 
 def make_event(ts, rng):
   return {

@@ -9,15 +9,33 @@ Comparación de rendimiento entre Python Puro, Pandas, Polars, DuckDB y Spark pa
 
 ## 1) Preparacion de Terraform
 
+### Conexión con AWS
+Debes tener AWS CLI v2 y Session Manager Plugin instalados, paso seguido configurar 
+- Solo una vez
+```powershell
+aws configure sso
+# SSO session name: mineria-benchmark
+# SSO start URL: <URL de AWS access portal>
+# SSO region: us-east-2
+# Loggearse a la cuenta
+# Profile name: maraosoc
+```
+- Después
+```
+aws sso login --profile maraosoc
+```
+> Para verificar el perfil correr `aws sts get-caller-identity --profile maraosoc`
+
 ### Creación del backend
 ```bash
-bash create_backend.sh maraosoc
+create_backend.sh maraosoc
 ```
 Para crear en AWS:
 - Bucket S3: mineria-benchmark-maraosoc-terraform-state
 - KMS key para cifrado del estado
 
 > La ejecución de este script mostrará el nombre del bucket y la clave KMS que se deben actualizar en `infrastructure/provider.tf`
+> Para consultar después los nombres de bicket y KMS ejecutar: `aws cloudformation describe-stacks --stack-name mineria-benchmark-maraosoc --region us-east-2 --profile maraosoc --query "Stacks[0].Outputs" --output table`
 
 ### Inicializar terraform
 ```bash

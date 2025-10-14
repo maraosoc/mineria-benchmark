@@ -1,44 +1,71 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Terraform backend resources
+Description: Resources for Terraform Backend
 
 Parameters:
   BucketName:
     Type: String
+    Description: Name of the S3 bucket for storing Terraform state
 
 Resources:
   TerraformStateBucket:
     Type: AWS::S3::Bucket
     Properties:
+      AccessControl: Private
       BucketName: !Ref BucketName
       VersioningConfiguration:
         Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
-              SSEAlgorithm: aws:kms
-              KMSMasterKeyID: !Ref TerraformKey
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt TerraformStateBucketKMSKey.Arn
+            BucketKeyEnabled: true
 
-  TerraformKey:
+  TerraformStateBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TerraformStateBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: DenyUnEncryptedObjectUploads
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:PutObject"
+            Resource: !Sub "${TerraformStateBucket.Arn}/*"
+            Condition:
+              StringNotEquals:
+                "s3:x-amz-server-side-encryption": "aws:kms"
+
+  TerraformStateBucketKMSKey:
     Type: AWS::KMS::Key
     Properties:
-      Description: Terraform KMS key for state encryption
+      Description: KMS Key for encrypting Terraform state in S3
       EnableKeyRotation: true
+      MultiRegion: false
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: "kms:*"
+            Resource: "*"
 
-  DynamoLockTable:
-    Type: AWS::DynamoDB::Table
+  TerraformKMSAlias:
+    Type: AWS::KMS::Alias
     Properties:
-      AttributeDefinitions:
-        - AttributeName: LockID
-          AttributeType: S
-      KeySchema:
-        - AttributeName: LockID
-          KeyType: HASH
-      BillingMode: PAY_PER_REQUEST
+      AliasName: alias/terraform-backend-key
+      TargetKeyId: !Ref TerraformStateBucketKMSKey
 
 Outputs:
   S3BucketName:
     Value: !Ref TerraformStateBucket
   KMSKeyArn:
-    Value: !GetAtt TerraformKey.Arn
-  DynamoTable:
-    Value: !Ref DynamoLockTable
+    Value: !GetAtt TerraformStateBucketKMSKey.Arn
