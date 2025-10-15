@@ -20,10 +20,15 @@ resource "aws_s3_bucket" "data" {
   }
 }
 
+resource "random_id" "server" {
+
+  byte_length = 8
+}
+
 resource "aws_security_group" "sg" {
   name        = "${local.name}-sg"
   description = "Acceso SSH y salida"
-  vpc_id      = var.vpc_id
+  vpc_id      = data.aws_vpc.default.id
   ingress {
     from_port   = 22
     to_port     = 22
@@ -54,23 +59,23 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "runner" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = var.subnet_id
+  subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.sg.id]
   key_name               = var.key_pair_name
 
-  connection {
-    type        = "ssh"
-    user        = "ubuntu"
-    private_key = file("~/.ssh/mineria-key.pem")
-    host        = self.public_ip
-  }
+#  connection {
+#    type        = "ssh"
+#    user        = "ubuntu"
+#    private_key = file("~/.ssh/mineria-key.pem")
+#    host        = self.public_ip
+#  }
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo 'Conexión SSH exitosa desde Terraform'",
-      "hostname"
-    ]
-  }
+#  provisioner "remote-exec" {
+#    inline = [
+#      "echo 'Conexión SSH exitosa desde Terraform'",
+#      "hostname"
+#    ]
+#  }
 
   tags = {
     Name  = local.name

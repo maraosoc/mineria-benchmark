@@ -35,7 +35,7 @@ Para crear en AWS:
 - KMS key para cifrado del estado
 
 > La ejecución de este script mostrará el nombre del bucket y la clave KMS que se deben actualizar en `infrastructure/provider.tf`
-> Para consultar después los nombres de bicket y KMS ejecutar: `aws cloudformation describe-stacks --stack-name mineria-benchmark-maraosoc --region us-east-2 --profile maraosoc --query "Stacks[0].Outputs" --output table`
+> Para consultar después los nombres de bucket y KMS ejecutar: `aws cloudformation describe-stacks --stack-name mineria-benchmark-maraosoc --region us-east-2 --profile maraosoc --query "Stacks[0].Outputs" --output table`
 
 ### Inicializar terraform
 ```bash

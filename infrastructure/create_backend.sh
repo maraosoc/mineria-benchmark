@@ -2,8 +2,8 @@
 # Automatiza la creación del backend de Terraform
 # Uso: bash create_backend.sh <aws_profile>
 
-user="maraosoc" #$(git config user.email | cut -d'@' -f1)
-repo="mineria-benchmark" #$(git config --get remote.origin.url | rev | cut -d/ -f1 | rev | cut -d. -f1)
+user="maraosoc"
+repo="mineria-benchmark"
 stack="${repo}-${user}"
 bucket_name="${stack}-terraform-state"
 

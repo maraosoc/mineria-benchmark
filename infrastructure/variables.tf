@@ -34,12 +34,3 @@ variable "instance_type" {
   default = "m5.2xlarge"
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "VPC destino"
-}
-
-variable "subnet_id" {
-  type        = string
-  description = "Subred pública"
-}
