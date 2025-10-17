@@ -27,30 +27,33 @@ aws sso login --profile maraosoc
 > Para verificar el perfil correr `aws sts get-caller-identity --profile maraosoc`
 
 ### Creación del backend
-```bash
-create_backend.sh maraosoc
+```powershell
+.\create_backend.sh maraosoc
 ```
 Para crear en AWS:
 - Bucket S3: mineria-benchmark-maraosoc-terraform-state
 - KMS key para cifrado del estado
 
-> La ejecución de este script mostrará el nombre del bucket y la clave KMS que se deben actualizar en `infrastructure/provider.tf`
+> Solo la primer vez, la ejecución de este script mostrará el nombre del bucket y la clave KMS que se deben actualizar en `infrastructure/provider.tf`
 > Para consultar después los nombres de bucket y KMS ejecutar: `aws cloudformation describe-stacks --stack-name mineria-benchmark-maraosoc --region us-east-2 --profile maraosoc --query "Stacks[0].Outputs" --output table`
 
+### Variables personales por defecto
+Necesarias para indicar  a Terraform que use las mismas credenciales que AWS CLI
+```powershell
+$env:AWS_PROFILE    = "maraosoc"
+$env:TF_VAR_profile = "maraosoc"
+$env:TF_VAR_region  = "us-east-2"
+$env:TF_VAR_owner   = "maraosoc"
+```
 ### Inicializar terraform
 ```bash
 cd infrastructure
 terraform init
-terraform apply -auto-approve   -var 'bucket_name=mi-bucket-mineria'   -var 'vpc_id=vpc-...'   -var 'subnet_id=subnet-...'   -var 'key_pair_name=mi-keypair'
+terraform apply -auto-approve  -var 'bucket_name=mineria-benchmark-maraosoc-data' -var 'key_pair_name=mineria-benchmark-maraosoc-key'
 ```
 Salidas: `bucket_name`, `instance_public_ip`.
 
-### Variables personales por defecto
-```bash
-export AWS_PROFILE=maraosoc
-export TF_VAR_profile=maraosoc
-export TF_VAR_region=us-east-2
-export TF_VAR_owner=maraosoc
+
 
 ## 2) Conexión a la EC2
 ```bash

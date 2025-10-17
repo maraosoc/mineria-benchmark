@@ -1,0 +1,31 @@
+#!/bin/bash
+# Automatiza la creación del backend de Terraform
+# Uso: bash create_backend.sh <aws_profile>
+
+user="maraosoc"
+repo="mineria-benchmark"
+stack="${repo}-${user}"
+bucket_name="${stack}-terraform-state"
+
+aws cloudformation deploy \
+    --stack-name "$stack" \
+    --template-file ./backend.yaml \
+    --profile "$1" \
+    --parameter-overrides BucketName="$bucket_name" \
+    --tags Topic=Terraform Owner="$user"
+
+s3_bucket=$(aws cloudformation describe-stacks \
+    --stack "$stack" --output text \
+    --query "Stacks[0].Outputs[?OutputKey=='S3BucketName'].OutputValue" \
+    --profile "$1"
+)
+kms_key_id=$(aws cloudformation list-stack-resources \
+  --stack-name "$stack" \
+  --query "StackResourceSummaries[?ResourceType=='AWS::KMS::Key'].PhysicalResourceId" \
+  --output text --profile "$1"
+)
+
+echo
+echo "S3 Bucket : ${s3_bucket}"
+echo "KMS key id : ${kms_key_id}"
+echo "*** Añade estos valores a tu bloque backend para especificarlos"

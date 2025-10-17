@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Resources for Terraform Backend
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket for storing Terraform state
+
+Resources:
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt TerraformStateBucketKMSKey.Arn
+            BucketKeyEnabled: true
+
+  TerraformStateBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref TerraformStateBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: DenyUnEncryptedObjectUploads
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:PutObject"
+            Resource: !Sub "${TerraformStateBucket.Arn}/*"
+            Condition:
+              StringNotEquals:
+                "s3:x-amz-server-side-encryption": "aws:kms"
+
+  TerraformStateBucketKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: KMS Key for encrypting Terraform state in S3
+      EnableKeyRotation: true
+      MultiRegion: false
+      KeyPolicy:
+        Version: 2012-10-17
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            Action: "kms:*"
+            Resource: "*"
+
+  TerraformKMSAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: alias/terraform-backend-key
+      TargetKeyId: !Ref TerraformStateBucketKMSKey
+
+Outputs:
+  S3BucketName:
+    Value: !Ref TerraformStateBucket
+  KMSKeyArn:
+    Value: !GetAtt TerraformStateBucketKMSKey.Arn
