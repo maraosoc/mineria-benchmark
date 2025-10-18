@@ -1,15 +1,14 @@
 terraform {
-  required_version = ">= 1.6.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.50"
+      version = "~> 5.0"
     }
   }
 
   backend "s3" {
     bucket         = "mineria-benchmark-maraosoc-terraform-state"
-    key            = "terraform/state.tfstate"
+    key            = "s3/state.tfstate"
     region         = "us-east-2"
     encrypt        = true
     kms_key_id     = "9ddfd080-af73-493a-b58a-e5bb58cab8af"
@@ -17,6 +16,11 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
-  profile = var.profile
+  region = "us-east-2"
+
+  default_tags {
+    tags = {
+      Topic = "terraform"
+    }
+  }
 }
