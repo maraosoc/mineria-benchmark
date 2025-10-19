@@ -28,11 +28,12 @@ variable "project_name" {
 
 variable "bucket_name" {
   type = string
+  default = "maraosoc-mineria-benchmark"
 }
 
 variable "key_pair_name" {
   type        = string
-  description = "Nombre del key pair existente para SSH"
+  description = "Acces Key of your AWS account"
 }
 
 variable "instance_type" {
@@ -57,6 +58,5 @@ variable "source_name" {
 }
 
 variable "data_size" {
-  description = "Script initializer path"
   type        = string
 }
