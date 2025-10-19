@@ -15,7 +15,8 @@ sudo apt update
 sudo apt install -y python3 python3-pip awscli
 
 pip3 install --upgrade pip
-pip3 install polars boto3
+sudo apt install -y openjdk-17-jre-headless
+pip3 install pandas polars
 
 # Descargamos el script de main.py 
 aws s3 sync s3://$${BUCKET}/scripts/$${EXPERIMENT}/ /home/ubuntu/$${EXPERIMENT}/

@@ -20,23 +20,26 @@ import sys
 import time
 import glob
 
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession, Window, functions as F
 
 
 def build_spark(app_name: str = "BenchmarkSparkLocal") -> SparkSession:
     """
     Construye una SparkSession local con configs útiles para procesamiento batch.
+    Optimizado para m5.2xlarge (8 vCPU, 32GB RAM).
     """
     return (
         SparkSession.builder
         .appName(app_name)
         .master("local[*]")  # ejecuta en la propia EC2 con todos los cores disponibles
+        .config("spark.driver.memory", "24g")  # Dejar 8GB para SO
+        .config("spark.executor.memory", "24g")
         .config("spark.sql.adaptive.enabled", "true")
         .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
         .config("spark.sql.files.ignoreCorruptFiles", "true")
         .config("spark.sql.files.maxPartitionBytes", "256m")
-        # Directorio local para shuffle/temp (opcional, por si necesitas controlar discos)
         .config("spark.local.dir", "/tmp/spark")
+        .config("spark.sql.shuffle.partitions", "16")  # 2x cores
         .getOrCreate()
     )
 
@@ -63,6 +66,10 @@ def run(input_dir: str) -> None:
         sys.exit(2)
 
     spark = build_spark()
+    
+    print(f"[spark] Spark version: {spark.version}", file=sys.stderr)
+    print(f"[spark] Reading from: {pattern}", file=sys.stderr)
+    
     try:
         # Lectura de NDJSON (un objeto por línea)
         df = spark.read.json(pattern)
@@ -81,7 +88,10 @@ def run(input_dir: str) -> None:
             .where(F.col("bucket").isNotNull())
             .groupBy("bucket")
             .count()
-            .withColumn("rate", F.col("count") / F.sum("count").over())
+            .withColumn(
+                "rate", 
+                F.col("count") / F.sum("count").over(Window.partitionBy())
+            )
             .orderBy("bucket")
         )
 
