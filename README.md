@@ -1,6 +1,7 @@
 
 # Benchmark de Herramientas de Datos
-> Realizado por: *Manuela Ramos Ospina*, *Paula Andrea Pirela Rios* y *Carlos Eduardo Baez Coronado*
+> Realizado por: **Manuela Ramos Ospina**, **Paula Andrea Pirela Rios** y **Carlos Eduardo Baez Coronado**
+
 Comparación de rendimiento entre Python Puro, Pandas, Polars, DuckDB y Spark para calcular tasas de códigos HTTP a partir de logs JSON almacenados en S3.
 
 - El objetivo es medir tiempo de proceso, y contar el número de tasas de error 2xx, 4xx y 5xx.
@@ -70,13 +71,13 @@ graph TD
     B --> D[10,000 archivos]
     B --> E[20,000 archivos]
     C --> F[Mayor número de lineas - 15GB]
-    C --> G[Menor número de lineas - 5GB]
-    C --> H[Medio número de lineas - 10GB] 
-    D --> I[Menor número de lineas - 5GB]
-    D --> J[Mayor número de lineas - 15GB]
-    D --> K[Medio número de lineas - 10GB]
-    E --> L[Medio número de lineas - 10GB]
-    E --> M[Mayor número de lineas - 15GB]
+    C --> G[Medio número de lineas - 10GB]
+    C --> H[Menor número de lineas - 5GB] 
+    D --> I[Mayor número de lineas - 15GB]
+    D --> J[Medio número de lineas - 10GB]
+    D --> K[Menor número de lineas - 5GB]
+    E --> L[Mayor número de lineas - 15GB]
+    E --> M[Medio número de lineas - 10GB]
     E --> N[Menor número de lineas - 5GB]
     style A fill:#f9f,stroke:#333,stroke-width:4px
 ```
@@ -141,6 +142,7 @@ Execution time: 39.533823 seconds
 ```
 Que indica el tiempo de ejecución y el conteo de códigos HTTP 2xx, 4xx y 5xx respectivamente.
 
+A continuación una captura de pantalla de los resultados en S3:
 <img src="common\Captura de pantalla 2025-10-18 215605.png" alt="Resultados en S3" width="70%" />
 
 ### Analisis de resultados
