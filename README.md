@@ -36,6 +36,7 @@ mineria-benchmark/
 ├── run.sh                           # Script maestro de automatización
 ├── generator.ipynb                  # Notebook para generar datos sintéticos
 ├── pyproject.toml                   # Configuración del proyecto Python (uv)
+├── results_analysis.ipynb           # Análisis de resultados y visualizaciones
 └── README.md                        # Este archivo
 ```
 
@@ -47,6 +48,7 @@ mineria-benchmark/
 | `infrastructure/EC2/` | Template reutilizable para todos los experimentos |
 | `ex-*/main.py` | Implementación específica de cada herramienta  |
 | `ex-*/user_data.sh` | Script se ejecuta en la EC2 |
+| results_analysis.ipynb | Análisis de resultados y visualizaciones |
 
 ---
 ## Explicación base del Benchmark
@@ -146,6 +148,4 @@ A continuación una captura de pantalla de los resultados en S3:
 <img src="common\Captura de pantalla 2025-10-18 215605.png" alt="Resultados en S3" width="70%" />
 
 ### Analisis de resultados
-Los logs de salida de los escenarios de 5, 10 y 20mil archivos con sus respectivos tamaños (5, 10 y 15 GB) se analizan en el notebook `analysis/benchmark_analysis.ipynb`, *demostrando que DuckDB y Polars son las herramientas más rápidas para este tipo de procesamiento de datos <- CAMMBIAR CUANDO SE TENGAN LOS RESULTADOS*.
-
-<img src="common\grafica comparativa.jpg" alt="Resultados comparativos" width="70%" />
+Los logs de salida de los escenarios de 5, 10 y 20mil archivos con sus respectivos tamaños (5, 10 y 15 GB) se analizan en el notebook `results_analysis.ipynb`, *demostrando que DuckDB y Polars son las herramientas más rápidas para este tipo de procesamiento de datos.
