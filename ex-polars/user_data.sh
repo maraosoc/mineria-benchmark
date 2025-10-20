@@ -23,9 +23,6 @@ aws s3 sync s3://$${BUCKET}/scripts/$${EXPERIMENT}/ /home/ubuntu/$${EXPERIMENT}/
 
 aws s3 sync s3://$${BUCKET}/jsondata/$${DATASIZE}/ /home/ubuntu/$${EXPERIMENT}/data/
 
-
-
-
 ~/.local/bin/uv run /home/ubuntu/$${EXPERIMENT}/main.py --input /home/ubuntu/$${EXPERIMENT}/data > /home/ubuntu/output.log
 
 aws s3 cp  "/home/ubuntu/output.log"  s3://$${BUCKET}/results/$${EXPERIMENT}/$${DATASIZE}/output.log
