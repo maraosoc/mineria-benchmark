@@ -144,8 +144,5 @@ Execution time: 39.533823 seconds
 ```
 Que indica el tiempo de ejecución y el conteo de códigos HTTP 2xx, 4xx y 5xx respectivamente.
 
-A continuación una captura de pantalla de los resultados en S3:
-<img src="common\Captura de pantalla 2025-10-18 215605.png" alt="Resultados en S3" width="70%" />
-
 ### Analisis de resultados
 Los logs de salida de los escenarios de 5, 10 y 20mil archivos con sus respectivos tamaños (5, 10 y 15 GB) se analizan en el notebook `results_analysis.ipynb`, *demostrando que DuckDB y Polars son las herramientas más rápidas para este tipo de procesamiento de datos.
